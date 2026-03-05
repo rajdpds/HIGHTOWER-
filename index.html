@@ -30,14 +30,6 @@ header{
     font-weight:700;
 }
 
-.join-btn{
-    background:transparent;
-    border:2px solid #ff0000;
-    color:#ff0000;
-    padding:10px 25px;
-    border-radius:30px;
-    cursor:pointer;
-}
 /* JOIN BUTTON ANIMATION */
 .join-btn{
     background:transparent;
@@ -51,12 +43,8 @@ header{
 }
 
 @keyframes joinMove{
-    0%{
-        transform:translateX(-15px);
-    }
-    100%{
-        transform:translateX(15px);
-    }
+    0%{ transform:translateX(-15px); }
+    100%{ transform:translateX(15px); }
 }
     
 .join-btn:hover{
@@ -77,59 +65,44 @@ header{
     object-fit:cover;
 }
 
-/* --- NEW SCROLL ANIMATION CSS --- */
+/* --- DYNAMIC SCROLL ANIMATION CSS --- */
 .scroll-animation-container {
     text-align: center;
-    padding: 100px 0;
-    overflow: hidden; /* Prevents horizontal scrollbars during animation */
+    padding: 120px 0;
+    overflow: hidden; 
     background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .scroll-text {
-    font-size: 80px;
+    font-size: 90px;
     font-weight: 700;
-    margin: 10px 0;
+    margin: 5px 0;
     display: block;
-    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease;
     text-transform: uppercase;
+    white-space: nowrap;
+    will-change: transform; /* Optimizes performance for smooth movement */
 }
 
-/* Initial States */
-.body-text { transform: translateX(0); }
-.disci-part { display: inline-block; transition: transform 1.2s ease; transform: translateX(0); }
-.pline-part { display: inline-block; transition: transform 1.2s ease; transform: translateX(0); }
-.strength-text { transform: translateX(0); }
-
-/* Animated States (When class 'active' is added via JS) */
-.scroll-animation-container.active .body-text {
-    transform: translateX(150%);
-    opacity: 0;
-}
-
-.scroll-animation-container.active .disci-part {
-    transform: translateX(-150%);
-}
-
-.scroll-animation-container.active .pline-part {
-    transform: translateX(150%);
-}
-
-.scroll-animation-container.active .strength-text {
-    transform: translateX(150%);
-    opacity: 0;
+.disci-part, .pline-part {
+    display: inline-block;
+    will-change: transform;
 }
 
 .scroll-instruction {
     color: #fff;
-    font-size: 24px;
-    margin-top: 20px;
+    font-size: 20px;
+    margin-top: 40px;
     letter-spacing: 5px;
+    opacity: 0.6;
 }
 
 @media(max-width: 600px) {
-    .scroll-text { font-size: 50px; }
+    .scroll-text { font-size: 55px; }
 }
-/* --- END NEW SCROLL ANIMATION CSS --- */
+/* --- END DYNAMIC SCROLL ANIMATION CSS --- */
 
 /* GRID 2x5 */
 .equipment-section{
@@ -164,12 +137,10 @@ header{
     font-weight:600;
 }
 
-/* IMPORTANT FIX — SAME WIDTH AS 2 GRID COLUMNS */
 .full-width-2{
     grid-column: span 2;
 }
 
-/* CARD STYLE */
 .card{
     padding:40px;
     background:#111;
@@ -180,13 +151,12 @@ header{
     margin-top:20px;
 }
 
-/* LOCATION */
 .location a{
     color:#ff0000;
     text-decoration:none;
 }
 
-/* NEW OVERLAY */
+/* OVERLAY */
 .overlay{
     display:none;
     position:fixed;
@@ -242,7 +212,6 @@ header{
     }
 }
 
-/* WHATSAPP FLOAT BUTTON */
 .whatsapp-float{
     position:fixed;
     bottom:25px;
@@ -278,13 +247,13 @@ header{
     <img src="20260303_095522.jpg">
 </div>
 
-<div class="scroll-animation-container" id="scrollSection">
-    <div class="scroll-text body-text">BODY</div>
-    <div class="scroll-text discipline-text">
-        <span class="disci-part">DISCI</span><span class="pline-part">PLINE</span>
+<div class="scroll-animation-container">
+    <div class="scroll-text" id="bodyTxt">BODY</div>
+    <div class="scroll-text">
+        <span id="disciTxt" class="disci-part">DISCI</span><span id="plineTxt" class="pline-part">PLINE</span>
     </div>
-    <div class="scroll-text strength-text">STRENGTH</div>
-    <div class="scroll-instruction">SCROLL<br>↓</div>
+    <div class="scroll-text" id="strengthTxt">STRENGTH</div>
+    <div class="scroll-instruction">SCROLL UP TO SPLIT<br>↓</div>
 </div>
     
 <div style="text-align:center; font-size:38px; margin:40px 0; letter-spacing:3px;">
@@ -371,19 +340,22 @@ header{
 
 <script>
 
-/* SCRIPT FOR SCROLL ANIMATION */
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        // As soon as the user scrolls past the top of this section
-        if (entry.boundingClientRect.top < 100) {
-            entry.target.classList.add('active');
-        } else {
-            entry.target.classList.remove('active');
-        }
-    });
-}, { threshold: [0, 0.1, 0.5, 1.0] });
+/* DYNAMIC SCROLL ANIMATION SCRIPT */
+window.addEventListener('scroll', function() {
+    // We calculate scroll relative to the top of the page
+    let value = window.scrollY;
 
-observer.observe(document.getElementById('scrollSection'));
+    // Adjust these numbers (0.5, 0.8, etc.) to make it faster or slower
+    document.getElementById('bodyTxt').style.transform = `translateX(${value * 0.8}px)`;
+    document.getElementById('disciTxt').style.transform = `translateX(-${value * 0.6}px)`;
+    document.getElementById('plineTxt').style.transform = `translateX(${value * 0.6}px)`;
+    document.getElementById('strengthTxt').style.transform = `translateX(${value * 1.0}px)`;
+    
+    // Optional: Fade out as it moves
+    let opacity = 1 - (value / 600);
+    document.getElementById('bodyTxt').style.opacity = opacity;
+    document.getElementById('strengthTxt').style.opacity = opacity;
+});
 
 /* ORIGINAL SCRIPTS */
 const exerciseData = {
@@ -440,3 +412,4 @@ function payNow(){
     
 </body>
 </html>
+
